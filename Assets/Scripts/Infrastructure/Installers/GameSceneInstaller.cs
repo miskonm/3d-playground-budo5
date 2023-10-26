@@ -1,3 +1,4 @@
+using Playground.Services.Input;
 using Zenject;
 
 namespace Playground.Infrastructure.Installers
@@ -8,7 +9,7 @@ namespace Playground.Infrastructure.Installers
 
         public override void InstallBindings()
         {
-
+            InputServiceInstaller.Install(Container);
         }
 
         #endregion

@@ -33,7 +33,7 @@ namespace Playground.Services.Bootstrap
 
         private async UniTask BootstrapAsync()
         {
-            await UniTask.Delay(2 * 1000);
+            // await UniTask.Delay(2 * 1000);
 
             _gameService.TransitionToGame();
         }
