@@ -1,4 +1,6 @@
-using Playground.Services.Game;
+using Playground.Audio;
+using Playground.Services.Event;
+using Playground.Services.GameManagement;
 using Playground.Services.Scene;
 using Zenject;
 
@@ -11,7 +13,9 @@ namespace Playground.Infrastructure.Installers
         public override void InstallBindings()
         {
             SceneLoaderInstaller.Install(Container);
-            GameServiceInstaller.Install(Container);
+            GameManagementServiceInstaller.Install(Container);
+            EventBusInstaller.Install(Container);
+            AudioServiceInstaller.Install(Container);
         }
 
         #endregion
