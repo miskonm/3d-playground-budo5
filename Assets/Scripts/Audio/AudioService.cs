@@ -1,3 +1,4 @@
+using Playground.Extensions;
 using UnityEngine;
 using UnityEngine.Assertions;
 
@@ -14,7 +15,7 @@ namespace Playground.Audio
         private readonly Transform _rootTransform;
 
         private AudioServiceConfig _config;
-        private AudioSource _musicAudioSource;
+        private MusicAudioSourceWrapper _musicAudioSource;
         private Transform _serviceRootTransform;
         private AudioSource _soundAudioSource;
 
@@ -49,6 +50,16 @@ namespace Playground.Audio
             CreateMusicSource();
         }
 
+        public void PlayMusic()
+        {
+            if (_musicAudioSource.IsPlaying)
+            {
+                return;
+            }
+
+            PlayMusicInternal();
+        }
+
         public void PlaySound(SoundType type)
         {
             AudioClip clip = _config.GetSound(type);
@@ -61,14 +72,25 @@ namespace Playground.Audio
             _soundAudioSource.volume = SoundVolume;
         }
 
+        public void StopMusic()
+        {
+            if (!_musicAudioSource.IsPlaying)
+            {
+                return;
+            }
+            
+            _musicAudioSource.Stop();
+        }
+
         #endregion
 
         #region Private methods
 
         private void CreateMusicSource()
         {
-            AudioSource prefab = Resources.Load<AudioSource>(MusicSourcePrefabPath);
+            MusicAudioSourceWrapper prefab = Resources.Load<MusicAudioSourceWrapper>(MusicSourcePrefabPath);
             _musicAudioSource = Object.Instantiate(prefab, _serviceRootTransform);
+            _musicAudioSource.SetOnEnd(OnMusicEnded);
         }
 
         private void CreateRootObject()
@@ -91,6 +113,15 @@ namespace Playground.Audio
             _config = Resources.Load<AudioServiceConfig>(ConfigPath);
             Assert.IsNotNull(_config, $"{nameof(AudioService)}: {nameof(AudioServiceConfig)} is null " +
                                       $"on path '{ConfigPath}'");
+        }
+
+        private void OnMusicEnded() =>
+            PlayMusicInternal();
+
+        private void PlayMusicInternal()
+        {
+            AudioClip clip = _config.Musics.Random();
+            _musicAudioSource.Play(clip);
         }
 
         private void PlaySoundClip(AudioClip clip)

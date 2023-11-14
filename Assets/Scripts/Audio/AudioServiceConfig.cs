@@ -9,9 +9,19 @@ namespace Playground.Audio
     {
         #region Variables
 
+        [Header("Sounds")]
         [SerializeField] private SoundInfo[] _sounds;
 
+        [Header("Music")]
+        [SerializeField] private AudioClip[] _musics;
+        
         private readonly Dictionary<SoundType, AudioClip> _clipsByType = new();
+
+        #endregion
+
+        #region Properties
+
+        public AudioClip[] Musics => _musics;
 
         #endregion
 
