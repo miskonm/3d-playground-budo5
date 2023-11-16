@@ -8,6 +8,7 @@ namespace Playground.Game.Player
     {
         #region Variables
 
+        [SerializeField] private PlayerAnimation _animation;
         [SerializeField] private CharacterController _characterController;
         [SerializeField] private float _speed = 1f;
         [SerializeField] private float _gravityMultiplier = 1f;
@@ -51,8 +52,6 @@ namespace Playground.Game.Player
             _moveVector = transform.right * axis.x + transform.forward * axis.y;
             _moveVector *= _speed;
 
-            // _characterController.Move(_moveVector * Time.deltaTime);
-
             bool isGrounded =
                 Physics.CheckSphere(_checkGroundTransform.position, _checkGroundRadius, _checkGroundLayerMask);
 
@@ -69,7 +68,10 @@ namespace Playground.Game.Player
             }
 
             _fallVector.y += gravity * Time.deltaTime;
-            // _characterController.Move(_fallVector * Time.deltaTime);
+
+            _animation.SetSpeed(_moveVector);
+            _animation.SetGrounded(isGrounded);
+            _animation.SetSpeedY(_fallVector.y);
         }
 
         private void FixedUpdate()
