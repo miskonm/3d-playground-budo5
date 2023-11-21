@@ -109,7 +109,6 @@ namespace Playground.Services.Audio
 
         private void LoadConfig()
         {
-            Debug.LogError("LoadConfig");
             _config = Resources.Load<AudioServiceConfig>(ConfigPath);
             Assert.IsNotNull(_config, $"{nameof(AudioService)}: {nameof(AudioServiceConfig)} is null " +
                                       $"on path '{ConfigPath}'");

@@ -2,6 +2,7 @@ using Playground.Services.Audio;
 using Playground.Services.Event;
 using Playground.Services.GameManagement;
 using Playground.Services.Scene;
+using Playground.Services.UI;
 using Zenject;
 
 namespace Playground.Infrastructure.Installers
@@ -16,6 +17,7 @@ namespace Playground.Infrastructure.Installers
             GameManagementServiceInstaller.Install(Container);
             EventBusInstaller.Install(Container);
             AudioServiceInstaller.Install(Container);
+            UIServiceInstaller.Install(Container);
         }
 
         #endregion

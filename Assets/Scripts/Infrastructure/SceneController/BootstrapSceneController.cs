@@ -1,4 +1,5 @@
 using Playground.Services.Bootstrap;
+using Playground.Services.UI;
 using UnityEngine;
 using Zenject;
 
@@ -9,15 +10,17 @@ namespace Playground.Infrastructure.SceneController
         #region Variables
 
         private BootstrapService _bootstrapService;
+        private UIService _uiService;
 
         #endregion
 
         #region Setup/Teardown
 
         [Inject]
-        public void Construct(BootstrapService bootstrapService)
+        public void Construct(BootstrapService bootstrapService, UIService uiService)
         {
             _bootstrapService = bootstrapService;
+            _uiService = uiService;
         }
 
         #endregion
@@ -27,6 +30,7 @@ namespace Playground.Infrastructure.SceneController
         private void Start()
         {
             _bootstrapService.Bootstrap();
+            _uiService.Bootstrap();
         }
 
         #endregion

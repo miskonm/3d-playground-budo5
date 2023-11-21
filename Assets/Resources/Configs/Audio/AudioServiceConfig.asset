@@ -19,6 +19,4 @@ MonoBehaviour:
   - Clip: {fileID: 8300000, guid: c0add4303ec2e494eb578c0d87461e91, type: 3}
     Name: PlayerHit
     Type: 2
-  - Clip: {fileID: 8300000, guid: c0add4303ec2e494eb578c0d87461e91, type: 3}
-    Name: PlayerHit
-    Type: 2
+  _musics: []
