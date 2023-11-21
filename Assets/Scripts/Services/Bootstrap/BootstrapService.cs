@@ -1,6 +1,6 @@
 using Cysharp.Threading.Tasks;
-using Playground.Audio;
 using Playground.Events;
+using Playground.Services.Audio;
 using Playground.Services.Event;
 using Playground.Services.GameManagement;
 

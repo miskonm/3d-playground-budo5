@@ -1,5 +1,5 @@
-using Playground.Audio;
 using Playground.Events;
+using Playground.Services.Audio;
 using Playground.Services.Event;
 using UnityEngine;
 using Zenject;

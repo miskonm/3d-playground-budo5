@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Playground.Audio
+namespace Playground.Services.Audio
 {
     [CreateAssetMenu(fileName = nameof(AudioServiceConfig), menuName = "Playground/Audio/Audio Config")]
     public class AudioServiceConfig : ScriptableObject

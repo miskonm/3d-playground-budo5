@@ -2,7 +2,7 @@ using Playground.Extensions;
 using UnityEngine;
 using UnityEngine.Assertions;
 
-namespace Playground.Audio
+namespace Playground.Services.Audio
 {
     public class AudioService
     {

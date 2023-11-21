@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Scripting;
 
 namespace Playground.Game.Player
 {
@@ -33,6 +34,12 @@ namespace Playground.Game.Player
         public void SetSpeedY(float speed)
         {
             _animator.SetFloat(SpeedY, speed);
+        }
+        
+        [Preserve]
+        public void OnAnimation()
+        {
+            
         }
 
         #endregion

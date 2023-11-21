@@ -1,4 +1,4 @@
-using Playground.Audio;
+using Playground.Services.Audio;
 using Playground.Services.Event;
 using Playground.Services.GameManagement;
 using Playground.Services.Scene;

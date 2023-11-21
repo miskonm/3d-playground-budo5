@@ -1,6 +1,6 @@
 using Zenject;
 
-namespace Playground.Audio
+namespace Playground.Services.Audio
 {
     public class AudioServiceInstaller : Installer<AudioServiceInstaller>
     {

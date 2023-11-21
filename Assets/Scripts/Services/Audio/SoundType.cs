@@ -1,4 +1,4 @@
-namespace Playground.Audio
+namespace Playground.Services.Audio
 {
     public enum SoundType
     {

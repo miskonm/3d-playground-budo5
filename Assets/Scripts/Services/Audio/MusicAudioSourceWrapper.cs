@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace Playground.Audio
+namespace Playground.Services.Audio
 {
     public class MusicAudioSourceWrapper : MonoBehaviour
     {
