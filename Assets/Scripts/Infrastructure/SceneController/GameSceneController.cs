@@ -3,6 +3,7 @@ using Playground.Events;
 using Playground.Game;
 using Playground.Services.Audio;
 using Playground.Services.Event;
+using Playground.Services.Save;
 using Playground.Services.UI;
 using UnityEngine;
 using Zenject;
@@ -16,17 +17,20 @@ namespace Playground.Infrastructure.SceneController
         private AudioService _audioService;
         private EventBus _eventBus;
         private GameScreenService _gameScreenService;
+        private GameDataService _gameDataService;
 
         #endregion
 
         #region Setup/Teardown
 
         [Inject]
-        public void Construct(EventBus eventBus, AudioService audioService, GameScreenService gameScreenService)
+        public void Construct(EventBus eventBus, AudioService audioService, GameScreenService gameScreenService,
+            GameDataService gameDataService)
         {
             _eventBus = eventBus;
             _audioService = audioService;
             _gameScreenService = gameScreenService;
+            _gameDataService = gameDataService;
         }
 
         #endregion
@@ -35,6 +39,8 @@ namespace Playground.Infrastructure.SceneController
 
         private void Start()
         {
+            _gameDataService.Data.User.LevelIndex++;
+
             _gameScreenService.ShowScreen();
             _audioService.PlayMusic();
 
