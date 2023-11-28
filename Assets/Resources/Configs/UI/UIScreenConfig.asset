@@ -12,6 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ff1f9348b26b4fa7a617d60ee655f8a5, type: 3}
   m_Name: UIScreenConfig
   m_EditorClassIdentifier: 
-  _screen:
-  - {fileID: 5974209858125775167, guid: db5f645c432524af2aa81422003f703c, type: 3}
-  - {fileID: 948016422962482908, guid: 8a387e0024f6e4f9ea928b7be64ed48b, type: 3}
+  _screenPaths:
+  - UI/UIGameScreen
+  - UI/UISettingsScreen
+  _info:
+  - Name: UIGameScreen
+    Prefab: {fileID: 948016422962482908, guid: 8a387e0024f6e4f9ea928b7be64ed48b, type: 3}
+  - Name: UISettingsScreen
+    Prefab: {fileID: 5974209858125775167, guid: db5f645c432524af2aa81422003f703c, type: 3}

@@ -1,3 +1,6 @@
+using System;
+using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
 using Zenject;
 
@@ -8,8 +11,9 @@ namespace Playground.Services.UI
         #region Variables
 
         private const string ConfigPath = "Configs/UI/UIScreenConfig";
-        
+
         private readonly IInstantiator _instantiator;
+        private readonly Dictionary<Type, BaseUIScreen> _prefabsByType = new();
 
         private UIScreenConfig _config;
 
@@ -33,34 +37,47 @@ namespace Playground.Services.UI
 
         public TScreen GetScreen<TScreen>(Transform layerTransform) where TScreen : BaseUIScreen
         {
-            foreach (BaseUIScreen uiScreen in _config.Screen)
+            if (!_prefabsByType.TryGetValue(typeof(TScreen), out BaseUIScreen prefab))
             {
-                if (!IsNeededScreen<TScreen>(uiScreen))
-                {
-                    continue;
-                }
-
-                return _instantiator.InstantiatePrefabForComponent<TScreen>(uiScreen, layerTransform);
+                prefab = LoadPrefab<TScreen>();
             }
 
-            Debug.LogError($"[{nameof(UIScreenProvider)}:{nameof(GetScreen)}] No prefab for screen " +
-                           $"'{typeof(TScreen)}'");
-
-            return null;
+            return _instantiator.InstantiatePrefabForComponent<TScreen>(prefab, layerTransform);
         }
 
         #endregion
 
         #region Private methods
 
-        private bool IsNeededScreen<TScreen>(BaseUIScreen uiScreen) where TScreen : BaseUIScreen
+        private bool IsNeededScreen<TScreen>(string screenPath) where TScreen : BaseUIScreen
         {
-            return string.Equals(uiScreen.name, typeof(TScreen).Name);
+            return string.Equals(screenPath.Split("/")[^1], typeof(TScreen).Name);
         }
 
         private void LoadConfig()
         {
             _config = Resources.Load<UIScreenConfig>(ConfigPath);
+        }
+
+        private BaseUIScreen LoadPrefab<TScreen>() where TScreen : BaseUIScreen
+        {
+            foreach (string screenPath in _config.ScreenPath)
+            {
+                if (!IsNeededScreen<TScreen>(screenPath))
+                {
+                    continue;
+                }
+
+                TScreen prefab = Resources.Load<TScreen>(screenPath);
+                _prefabsByType.Add(typeof(TScreen), prefab);
+
+                return prefab;
+            }
+
+            Debug.LogError($"[{nameof(UIScreenProvider)}:{nameof(LoadPrefab)}] No prefab for screen " +
+                           $"'{typeof(TScreen)}'");
+
+            return null;
         }
 
         #endregion
