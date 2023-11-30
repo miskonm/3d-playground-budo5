@@ -15,8 +15,3 @@ MonoBehaviour:
   _screenPaths:
   - UI/UIGameScreen
   - UI/UISettingsScreen
-  _info:
-  - Name: UIGameScreen
-    Prefab: {fileID: 948016422962482908, guid: 8a387e0024f6e4f9ea928b7be64ed48b, type: 3}
-  - Name: UISettingsScreen
-    Prefab: {fileID: 5974209858125775167, guid: db5f645c432524af2aa81422003f703c, type: 3}

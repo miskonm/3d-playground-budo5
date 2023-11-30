@@ -1,6 +1,8 @@
+using System;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace Playground.Services.UI.Editor
 {
@@ -9,7 +11,8 @@ namespace Playground.Services.UI.Editor
     {
         #region Variables
 
-        private SerializedProperty _screenInfoSerializedProperty;
+        private ScreenInfoContainer _container;
+        private SerializedObject _containerSerializedObject;
         private SerializedProperty _screenPathsSerializedProperty;
 
         #endregion
@@ -19,7 +22,8 @@ namespace Playground.Services.UI.Editor
         private void OnEnable()
         {
             _screenPathsSerializedProperty = serializedObject.FindProperty("_screenPaths");
-            _screenInfoSerializedProperty = serializedObject.FindProperty("_info");
+
+            ValidateContainer();
             ApplyPaths();
         }
 
@@ -29,22 +33,36 @@ namespace Playground.Services.UI.Editor
 
         public override void OnInspectorGUI()
         {
+            GUI.enabled = false;
+            EditorGUILayout.ObjectField("Script", MonoScript.FromScriptableObject((UIScreenConfig)target),
+                typeof(UIScreenConfig), false);
+            GUI.enabled = true;
+
             serializedObject.Update();
+
+            EditorGUI.BeginChangeCheck();
+            EditorGUILayout.PropertyField(GetInfoProperty());
+            bool isChanged = false;
+            if (EditorGUI.EndChangeCheck())
+            {
+                ApplyPaths();
+                isChanged = true;
+            }
+
+            UpdateInfos();
 
             EditorGUI.BeginDisabledGroup(true);
             EditorGUILayout.PropertyField(_screenPathsSerializedProperty);
             EditorGUI.EndDisabledGroup();
 
-            UpdateInfos();
-
-            EditorGUI.BeginChangeCheck();
-            EditorGUILayout.PropertyField(_screenInfoSerializedProperty);
-            if (EditorGUI.EndChangeCheck())
-            {
-                ApplyPaths();
-            }
-
             serializedObject.ApplyModifiedProperties();
+
+            if (isChanged)
+            {
+                EditorUtility.SetDirty(_container);
+                EditorUtility.SetDirty(this);
+                AssetDatabase.SaveAssets();
+            }
         }
 
         #endregion
@@ -54,10 +72,11 @@ namespace Playground.Services.UI.Editor
         private void ApplyPaths()
         {
             List<string> paths = new();
-            for (int i = 0; i < _screenInfoSerializedProperty.arraySize; i++)
+            SerializedProperty screenInfoSerializedProperty = GetInfoProperty();
+            for (int i = 0; i < screenInfoSerializedProperty.arraySize; i++)
             {
-                SerializedProperty infoProperty = _screenInfoSerializedProperty.GetArrayElementAtIndex(i);
-                SerializedProperty prefabProperty = infoProperty.FindPropertyRelative("Prefab");
+                SerializedProperty infoProperty = screenInfoSerializedProperty.GetArrayElementAtIndex(i);
+                SerializedProperty prefabProperty = infoProperty.FindPropertyRelative("_prefab");
                 Object screen = prefabProperty.objectReferenceValue;
 
                 if (screen == null)
@@ -74,8 +93,11 @@ namespace Playground.Services.UI.Editor
             {
                 _screenPathsSerializedProperty.GetArrayElementAtIndex(i).stringValue = paths[i];
             }
+        }
 
-            AssetDatabase.SaveAssets();
+        private SerializedProperty GetInfoProperty()
+        {
+            return _containerSerializedObject.FindProperty("Infos");
         }
 
         private string GetValidResourcePath(Object screen)
@@ -112,25 +134,106 @@ namespace Playground.Services.UI.Editor
 
         private void UpdateInfos()
         {
-            for (int i = 0; i < _screenInfoSerializedProperty.arraySize; i++)
+            SerializedProperty screenInfoSerializedProperty = GetInfoProperty();
+            for (int i = 0; i < screenInfoSerializedProperty.arraySize; i++)
             {
-                SerializedProperty infoProperty = _screenInfoSerializedProperty.GetArrayElementAtIndex(i);
-                SerializedProperty prefabProperty = infoProperty.FindPropertyRelative("Prefab");
-                SerializedProperty nameProperty = infoProperty.FindPropertyRelative("Name");
+                SerializedProperty infoProperty = screenInfoSerializedProperty.GetArrayElementAtIndex(i);
+                SerializedProperty prefabProperty = infoProperty.FindPropertyRelative("_prefab");
+                SerializedProperty nameProperty = infoProperty.FindPropertyRelative("_name");
 
                 Object screen = prefabProperty.objectReferenceValue;
                 nameProperty.stringValue = screen == null ? string.Empty : screen.name;
             }
         }
 
+        private void ValidateContainer()
+        {
+            if (_container == null || _containerSerializedObject == null)
+            {
+                _container = CreateInstance<ScreenInfoContainer>();
+                UIScreenConfig config = (UIScreenConfig)target;
+                _container.Init(config.ScreenPath);
+                _containerSerializedObject = new SerializedObject(_container);
+            }
+        }
+
+        #endregion
+    }
+
+    public class ScreenInfoContainer : ScriptableObject
+    {
+        #region Public Nested Types
+
+        [Serializable]
+        public class ScreenInfo
+        {
+            #region Variables
+
+            [HideInInspector]
+            [SerializeField] private string _name;
+            [SerializeField] private BaseUIScreen _prefab;
+
+            #endregion
+
+            #region Setup/Teardown
+
+            public ScreenInfo(BaseUIScreen prefab)
+            {
+                _prefab = prefab;
+                _name = _prefab.name;
+            }
+
+            #endregion
+        }
+
         #endregion
 
-        // [Serializable]
-        // public class ScreenInfo
-        // {
-        //     [HideInInspector]
-        //     [SerializeField] private string _name;
-        //     public BaseUIScreen Prefab;
-        // }
+        #region Variables
+
+        public List<ScreenInfo> Infos;
+
+        #endregion
+
+        #region Public methods
+
+        public void Init(List<string> screenPaths)
+        {
+            Infos = new List<ScreenInfo>();
+            if (screenPaths == null)
+            {
+                return;
+            }
+
+            for (int i = 0; i < screenPaths.Count; i++)
+            {
+                string screenPath = screenPaths[i];
+                if (string.IsNullOrEmpty(screenPath))
+                {
+                    Debug.LogError($"[{nameof(UIScreenConfig)}] There is empty path in config on index '{i}'");
+                    continue;
+                }
+
+                string validAssetPath = GetValidAssetPath(screenPath);
+                BaseUIScreen prefab = AssetDatabase.LoadAssetAtPath<BaseUIScreen>(validAssetPath);
+                if (prefab == null)
+                {
+                    Debug.LogError($"[{nameof(UIScreenConfig)}] No prefab at path '{validAssetPath}' for index '{i}'");
+                    continue;
+                }
+
+                Infos.Add(new ScreenInfo(prefab));
+            }
+        }
+
+        #endregion
+
+        #region Private methods
+
+        private string GetValidAssetPath(string customScreenPath)
+        {
+            return $"Assets/Resources/{customScreenPath}.prefab";
+        }
+
+        #endregion
     }
 }
