@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using Playground.Services.AppState;
 using Playground.Services.Event;
+using Playground.Services.Log;
 using UnityEngine;
 using Zenject;
 
@@ -55,7 +56,7 @@ namespace Playground.Services.Save
             }
             catch (Exception e)
             {
-                Debug.LogError($"Can't save file. {e}");
+                this.LogError($"Can't save file. {e}");
             }
         }
 

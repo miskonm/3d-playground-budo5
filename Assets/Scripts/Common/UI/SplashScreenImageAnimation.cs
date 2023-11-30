@@ -1,3 +1,4 @@
+using Playground.Services.Log;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -29,11 +30,19 @@ namespace Playground.UI
 
         private void Awake()
         {
+            this.LogError("Awake");
             IsClockwise = false;
             _fillSpeed = 1 / _circleTime;
             _image.fillMethod = Image.FillMethod.Radial360;
             _image.fillOrigin = (int)Image.Origin360.Top;
             _image.fillAmount = 1;
+        }
+        
+       
+
+        private void Start()
+        {
+            this.LogError("Start");
         }
 
         private void Update()

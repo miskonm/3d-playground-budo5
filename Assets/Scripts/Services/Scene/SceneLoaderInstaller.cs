@@ -1,4 +1,7 @@
-using Zenject;
+
+
+using Playground.DI;
+using Playground.Services.Log;
 
 namespace Playground.Services.Scene
 {
@@ -6,9 +9,10 @@ namespace Playground.Services.Scene
     {
         #region Public methods
 
-        public override void InstallBindings()
+        protected override void InstallBindings()
         {
-            Container.Bind<SceneLoader>().AsSingle();
+            this.LogError($"InstallBindings");
+            Container.Bind<SceneLoader>().NonLazy();
         }
 
         #endregion

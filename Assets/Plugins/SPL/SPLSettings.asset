@@ -20,10 +20,10 @@ MonoBehaviour:
     GuidHex: 9fc0d4010bbf28b4594072e72b8655ab
   NeedOpenSceneOnStop: 1
   StopScene:
-    Name: GameScene
-    Index: 1
-    Path: Assets/Scenes/GameScene.unity
-    GuidHex: f1b5da857cf59432ea2c1416ecedce5b
+    Name: BootstrapScene
+    Index: 0
+    Path: Assets/Scenes/BootstrapScene.unity
+    GuidHex: 9fc0d4010bbf28b4594072e72b8655ab
   AllScenes:
   - Name: BootstrapScene
     Index: 0
