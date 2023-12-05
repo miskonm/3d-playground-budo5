@@ -1,12 +1,12 @@
-using Zenject;
+using Playground.DI;
 
 namespace Playground.Services.Save
 {
     public class GameDataServiceInstaller : Installer<GameDataServiceInstaller>
     {
-        public override void InstallBindings()
+        protected override void InstallBindings()
         {
-            Container.Bind<GameDataService>().FromNewComponentOnNewGameObject().AsSingle();
+            Container.Bind<GameDataService>().FromNewGameObject();
         }
     }
 }

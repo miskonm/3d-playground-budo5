@@ -1,32 +1,19 @@
-using Zenject;
+using Playground.DI;
 
 namespace Playground.Services.AppState
 {
     public class AppStateServiceInstaller : Installer<AppStateServiceInstaller>
     {
-        #region Public methods
+        #region Protected methods
 
-        public override void InstallBindings()
+        protected override void InstallBindings()
         {
-            Container
-                .Bind<AppStateService>()
-                .FromSubContainerResolve()
-                .ByMethod(InstallService)
-                .AsSingle();
-        }
-
-        #endregion
-
-        #region Private methods
-
-        private void InstallService(DiContainer subContainer)
-        {
-            subContainer.Bind<AppStateService>().AsSingle();
+            Container.Bind<AppStateService>();
 
 #if UNITY_EDITOR
-            subContainer.Bind<AppStateProvider>().To<EditorAppStateProvider>().AsSingle();
+            Container.Bind<AppStateProvider>().To<EditorAppStateProvider>();
 #else
-            subContainer.Bind<AppStateProvider>().To<MobileAppStateProvider>().AsSingle();
+            Container.Bind<AppStateProvider>().To<MobileAppStateProvider>();
 #endif
         }
 

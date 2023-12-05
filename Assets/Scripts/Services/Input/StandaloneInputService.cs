@@ -1,3 +1,4 @@
+using Playground.Services.Audio;
 using UnityEngine;
 
 namespace Playground.Services.Input
@@ -10,5 +11,10 @@ namespace Playground.Services.Input
         public bool IsJump => UnityEngine.Input.GetButtonDown("Jump");
 
         #endregion
+
+        public StandaloneInputService(AudioService audioService)
+        {
+            
+        }
     }
 }

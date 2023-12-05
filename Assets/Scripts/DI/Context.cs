@@ -42,7 +42,7 @@ namespace Playground.DI
 
         public void InjectAllSceneObjects()
         {
-            // TODO: пройтись по всем объектам на сцене и заинъектить завимости
+            _container.InjectAllSceneObjects();
         }
 
         #endregion
@@ -56,7 +56,7 @@ namespace Playground.DI
                 throw new NullReferenceException("No installer set!");
             }
 
-            _container = new Container();
+            _container = new Container(transform);
             _installer.Install(_container);
             _container.InstantiateNonLazy();
         }

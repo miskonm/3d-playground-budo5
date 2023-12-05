@@ -1,4 +1,6 @@
-using Zenject;
+
+
+using Playground.DI;
 
 namespace Playground.Services.Input
 {
@@ -6,13 +8,13 @@ namespace Playground.Services.Input
     {
         #region Public methods
 
-        public override void InstallBindings()
+        protected override void InstallBindings()
         {
 #if UNITY_STANDALONE
-            Container.Bind<IInputService>().To<StandaloneInputService>().AsSingle();
+            Container.Bind<IInputService>().To<StandaloneInputService>();
 #else
             Debug.LogError($"Not supported platform. Use default input service");
-            Container.Bind<IInputService>().To<StandaloneInputService>().AsSingle();
+            Container.Bind<IInputService>().To<StandaloneInputService>();
 #endif
         }
 

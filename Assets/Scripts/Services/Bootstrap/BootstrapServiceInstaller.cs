@@ -1,12 +1,14 @@
-using Zenject;
+
+
+using Playground.DI;
 
 namespace Playground.Services.Bootstrap
 {
     public class BootstrapServiceInstaller : Installer<BootstrapServiceInstaller>
     {
-        public override void InstallBindings()
+        protected override void InstallBindings()
         {
-            Container.Bind<BootstrapService>().AsSingle();
+            Container.Bind<BootstrapService>();
         }
     }
 }

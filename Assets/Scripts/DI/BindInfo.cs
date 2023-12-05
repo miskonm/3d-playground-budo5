@@ -1,4 +1,6 @@
 using System;
+using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace Playground.DI
 {
@@ -7,22 +9,42 @@ namespace Playground.DI
         #region Variables
 
         public Type BindType;
-        public Type ToType;
+        public BindMethod BindMethod;
         public bool IsNonLazy;
+        public Type ToType;
+        public GameObject Prefab;
 
         #endregion
 
         #region Public methods
 
-        public BindInfo To<T>()
+        public Type GetInstanceType()
         {
-            ToType = typeof(T);
+            return ToType ?? BindType;
+        }
+
+        public BindInfo FromNewGameObject()
+        {
+            BindMethod = BindMethod.FromNewGameObject;
             return this;
         }
-        
+
+        public BindInfo FromPrefab(GameObject prefab)
+        {
+            Prefab = prefab;
+            BindMethod = BindMethod.FromPrefab;
+            return this;
+        }
+
         public BindInfo NonLazy()
         {
             IsNonLazy = true;
+            return this;
+        }
+
+        public BindInfo To<T>()
+        {
+            ToType = typeof(T);
             return this;
         }
 

@@ -1,12 +1,10 @@
-using Playground.Common.UI;
+using Playground.DI;
 using Playground.Events;
 using Playground.Game;
 using Playground.Services.Audio;
 using Playground.Services.Event;
 using Playground.Services.Save;
-using Playground.Services.UI;
 using UnityEngine;
-using Zenject;
 
 namespace Playground.Infrastructure.SceneController
 {
@@ -16,8 +14,8 @@ namespace Playground.Infrastructure.SceneController
 
         private AudioService _audioService;
         private EventBus _eventBus;
-        private GameScreenService _gameScreenService;
         private GameDataService _gameDataService;
+        private GameScreenService _gameScreenService;
 
         #endregion
 

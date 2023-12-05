@@ -1,9 +1,9 @@
+using Playground.DI;
 using Playground.Services.AppState;
 using Playground.Services.Bootstrap;
 using Playground.Services.Save;
 using Playground.Services.UI;
 using UnityEngine;
-using Zenject;
 
 namespace Playground.Infrastructure.SceneController
 {

@@ -1,27 +1,36 @@
+using Playground.Game;
 using Playground.Services.AppState;
 using Playground.Services.Audio;
+using Playground.Services.Bootstrap;
 using Playground.Services.Event;
 using Playground.Services.GameManagement;
+using Playground.Services.Input;
+using Playground.Services.Log;
 using Playground.Services.Save;
 using Playground.Services.Scene;
 using Playground.Services.UI;
-using Zenject;
 
 namespace Playground.Infrastructure.Installers
 {
-    public class ProjectInstaller : MonoInstaller
+    public class ProjectInstaller : DI.Installer
     {
         #region Public methods
 
-        public override void InstallBindings()
+        protected override void InstallBindings()
         {
-            // SceneLoaderInstaller.Install(Container);
-            // GameManagementServiceInstaller.Install(Container);
-            // EventBusInstaller.Install(Container);
-            // AudioServiceInstaller.Install(Container);
-            // UIServiceInstaller.Install(Container);
-            // GameDataServiceInstaller.Install(Container);
-            // AppStateServiceInstaller.Install(Container);
+            this.LogError($"InstallBindings");
+            GameManagementServiceInstaller.Install(Container);
+            SceneLoaderInstaller.Install(Container);
+            EventBusInstaller.Install(Container);
+            InputServiceInstaller.Install(Container);
+            AudioServiceInstaller.Install(Container);
+            UIServiceInstaller.Install(Container);
+            GameDataServiceInstaller.Install(Container);
+            AppStateServiceInstaller.Install(Container);
+            BootstrapServiceInstaller.Install(Container);
+
+            Container.Bind<GameScreenService>();
+            Container.Bind<SettingsScreenController>();
         }
 
         #endregion

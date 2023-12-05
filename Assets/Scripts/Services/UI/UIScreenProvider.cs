@@ -1,8 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using Playground.DI;
 using UnityEngine;
-using Zenject;
+
 
 namespace Playground.Services.UI
 {
@@ -42,7 +43,7 @@ namespace Playground.Services.UI
                 prefab = LoadPrefab<TScreen>();
             }
 
-            return _instantiator.InstantiatePrefabForComponent<TScreen>(prefab, layerTransform);
+            return _instantiator.InstantiatePrefab<TScreen>(prefab, layerTransform);
         }
 
         #endregion

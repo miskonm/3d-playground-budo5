@@ -1,4 +1,5 @@
 using Playground.Extensions;
+using Playground.Services.Scene;
 using UnityEngine;
 using UnityEngine.Assertions;
 
@@ -12,7 +13,7 @@ namespace Playground.Services.Audio
         private const string MusicSourcePrefabPath = "Configs/Audio/MusicSource";
         private const string SoundPrefsKey = "Audio/SoundVolume";
 
-        private readonly Transform _rootTransform;
+        // private readonly Transform _rootTransform;
 
         private AudioServiceConfig _config;
         private MusicAudioSourceWrapper _musicAudioSource;
@@ -33,9 +34,9 @@ namespace Playground.Services.Audio
 
         #region Setup/Teardown
 
-        public AudioService(Transform rootTransform)
+        public AudioService(SceneLoader sceneLoader)
         {
-            _rootTransform = rootTransform;
+            // _rootTransform = rootTransform;
         }
 
         #endregion
@@ -96,7 +97,8 @@ namespace Playground.Services.Audio
         private void CreateRootObject()
         {
             _serviceRootTransform = new GameObject($"[{nameof(AudioService)}]").transform;
-            _serviceRootTransform.SetParent(_rootTransform);
+            // _serviceRootTransform.SetParent(_rootTransform);
+            Object.DontDestroyOnLoad(_serviceRootTransform);
         }
 
         private void CreateSoundSource()

@@ -1,6 +1,6 @@
+using Playground.DI;
 using Playground.Services.Input;
 using UnityEngine;
-using Zenject;
 
 namespace Playground.Game.Player
 {

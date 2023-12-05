@@ -1,4 +1,7 @@
-using Zenject;
+
+
+using Playground.DI;
+using UnityEngine;
 
 namespace Playground.Services.UI
 {
@@ -12,24 +15,15 @@ namespace Playground.Services.UI
 
         #region Public methods
 
-        public override void InstallBindings()
+        protected override void InstallBindings()
         {
-            Container
-                .Bind<UIService>()
-                .FromSubContainerResolve()
-                .ByMethod(InstallService)
-                .AsSingle();
-        }
+            Container.Bind<UIService>();
+            Container.Bind<UIScreenProvider>();
+            
+            // TODO: Make more usefull
+            GameObject prefab = Resources.Load<GameObject>(UILayerProviderPath);
+            Container.Bind<UILayerProvider>().FromPrefab(prefab);
 
-        #endregion
-
-        #region Private methods
-
-        private void InstallService(DiContainer subContainer)
-        {
-            subContainer.Bind<UIService>().AsSingle();
-            subContainer.Bind<UIScreenProvider>().AsSingle();
-            subContainer.Bind<UILayerProvider>().FromComponentInNewPrefabResource(UILayerProviderPath).AsSingle();
         }
 
         #endregion

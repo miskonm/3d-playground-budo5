@@ -1,12 +1,15 @@
-using Zenject;
+
+
+using Playground.DI;
 
 namespace Playground.Services.Audio
 {
     public class AudioServiceInstaller : Installer<AudioServiceInstaller>
     {
-        public override void InstallBindings()
+        protected override void InstallBindings()
         {
-            Container.Bind<AudioService>().AsSingle().WithArguments(Container.DefaultParent);
+            Container.Bind<AudioService>();
+            // Container.Bind<AudioService>().AsSingle().WithArguments(Container.DefaultParent);
         }
     }
 }
