@@ -7,7 +7,7 @@ namespace Playground.DI
         #region Variables
 
         public Type BindType;
-        public Type RealisationType;
+        public Type ToType;
         public bool IsNonLazy;
 
         #endregion
@@ -16,7 +16,7 @@ namespace Playground.DI
 
         public BindInfo To<T>()
         {
-            RealisationType = typeof(T);
+            ToType = typeof(T);
             return this;
         }
         

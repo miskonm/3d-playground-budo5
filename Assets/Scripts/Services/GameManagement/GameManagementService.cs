@@ -1,6 +1,7 @@
 using Cysharp.Threading.Tasks;
 using Playground.Events;
 using Playground.Services.Event;
+using Playground.Services.Log;
 using Playground.Services.Scene;
 
 namespace Playground.Services.GameManagement
@@ -20,6 +21,7 @@ namespace Playground.Services.GameManagement
         {
             _sceneLoader = sceneLoader;
             _eventBus = eventBus;
+            this.LogError($"ctor sceneLoader '{sceneLoader}' eventBus '{eventBus}'");
         }
 
         #endregion

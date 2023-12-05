@@ -1,4 +1,6 @@
-using Zenject;
+
+
+using Playground.DI;
 
 namespace Playground.Services.Event
 {
@@ -6,9 +8,9 @@ namespace Playground.Services.Event
     {
         #region Public methods
 
-        public override void InstallBindings()
+        protected override void InstallBindings()
         {
-            Container.Bind<EventBus>().AsSingle();
+            Container.Bind<EventBus>();
         }
 
         #endregion

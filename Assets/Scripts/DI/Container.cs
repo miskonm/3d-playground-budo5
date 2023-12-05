@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 
 namespace Playground.DI
 {
@@ -37,7 +38,7 @@ namespace Playground.DI
         {
             foreach (BindInfo info in _bindInfoByTypes.Values)
             {
-                if (info.IsNonLazy)
+                if (info.IsNonLazy && !_instancesByTypes.ContainsKey(info.BindType))
                 {
                     Instantiate(info);
                 }
@@ -48,12 +49,59 @@ namespace Playground.DI
 
         #region Private methods
 
-        private void Instantiate(BindInfo bindInfo)
+        private ParameterInfo[] GetCtorParametersInfo(Type instanceType)
         {
-            // TODO: Right realization for ctor arguments with check circular dependency
-            Type instanceType = bindInfo.RealisationType ?? bindInfo.BindType;
-            object instance = Activator.CreateInstance(instanceType);
+            MemberInfo[] member = instanceType.GetMember(".ctor");
+            if (member.Length > 0)
+            {
+                MethodBase ctorMethod = member[0] as MethodBase;
+                if (ctorMethod != null)
+                {
+                    return ctorMethod.GetParameters();
+                }
+            }
+
+            return null;
+        }
+
+        private object Instantiate(BindInfo bindInfo)
+        {
+            Type instanceType = bindInfo.ToType ?? bindInfo.BindType;
+            
+            ParameterInfo[] ctorParametersInfo = GetCtorParametersInfo(instanceType);
+            
+            object instance = null;
+            if (ctorParametersInfo == null || ctorParametersInfo.Length == 0)
+            {
+                instance = Activator.CreateInstance(instanceType); 
+            }
+            else
+            {
+                object[] arguments = new object[ctorParametersInfo.Length];
+                
+                for (int i = 0; i < ctorParametersInfo.Length; i++)
+                {
+                    ParameterInfo parameterInfo = ctorParametersInfo[i];
+                    Type type = parameterInfo.ParameterType;
+                    if (!_instancesByTypes.TryGetValue(type, out object value))
+                    {
+                        if (!_bindInfoByTypes.ContainsKey(type))
+                        {
+                            throw new Exception($"Can't instantiate type '{type}' because it's not bind!");
+                        }
+
+                        value = Instantiate(_bindInfoByTypes[type]);
+                    }
+                    
+                    arguments[i] = value;
+                }
+
+                instance = Activator.CreateInstance(instanceType, arguments); 
+            }
+            
             _instancesByTypes.Add(bindInfo.BindType, instance);
+
+            return instance;
         }
 
         #endregion

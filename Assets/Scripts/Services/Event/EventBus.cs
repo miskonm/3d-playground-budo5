@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Playground.Services.Log;
 
 namespace Playground.Services.Event
 {
@@ -12,6 +13,11 @@ namespace Playground.Services.Event
         #endregion
 
         #region Public methods
+
+        public EventBus()
+        {
+            this.LogError($".ctor");
+        }
 
         public void Fire<TEvent>(TEvent e = default)
         {

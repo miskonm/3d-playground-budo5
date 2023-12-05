@@ -1,4 +1,6 @@
-using Zenject;
+
+
+using Playground.DI;
 
 namespace Playground.Services.GameManagement
 {
@@ -6,9 +8,10 @@ namespace Playground.Services.GameManagement
     {
         #region Public methods
 
-        public override void InstallBindings()
+        protected override void InstallBindings()
         {
-            Container.Bind<GameManagementService>().AsSingle();
+            // TODO: Nikita remove non lazy
+            Container.Bind<GameManagementService>().NonLazy();
         }
 
         #endregion

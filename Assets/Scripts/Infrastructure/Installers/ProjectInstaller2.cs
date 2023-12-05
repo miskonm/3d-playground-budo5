@@ -1,3 +1,5 @@
+using Playground.Services.Event;
+using Playground.Services.GameManagement;
 using Playground.Services.Log;
 using Playground.Services.Scene;
 
@@ -10,9 +12,9 @@ namespace Playground.Infrastructure.Installers
         protected override void InstallBindings()
         {
             this.LogError($"InstallBindings");
+            GameManagementServiceInstaller.Install(Container);
             SceneLoaderInstaller.Install(Container);
-            // GameManagementServiceInstaller.Install(Container);
-            // EventBusInstaller.Install(Container);
+            EventBusInstaller.Install(Container);
             // AudioServiceInstaller.Install(Container);
             // UIServiceInstaller.Install(Container);
             // GameDataServiceInstaller.Install(Container);
