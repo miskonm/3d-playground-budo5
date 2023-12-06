@@ -86,58 +86,94 @@ namespace Playground.DI
             }
         }
 
-        public Object InstantiatePrefab(Type type, GameObject prefab, Transform transform)
-        {
-            GameObject go = Object.Instantiate(prefab, transform);
-            Component component = go.GetComponent(type);
-            TryInjectObject(component);
-
-            return component;
-        }
-
         #endregion
 
         #region Private methods
 
-        private ParameterInfo[] GetCtorParametersInfo(Type instanceType)
+        private object CreatePureInstance(BindInfo info, object[] arguments)
         {
-            bool isMono = IsMonobeh(instanceType);
+            return arguments == null
+                ? Activator.CreateInstance(info.GetInstanceType())
+                : Activator.CreateInstance(info.GetInstanceType(), arguments);
+        }
 
-            if (!isMono)
+        private object[] GetArgumentsInstances(List<Type> dependencyStack, ParameterInfo[] ctorParametersInfo)
+        {
+            object[] arguments = new object[ctorParametersInfo.Length];
+            for (int i = 0; i < ctorParametersInfo.Length; i++)
             {
-                MemberInfo[] member = instanceType.GetMember(".ctor");
-                if (member.Length > 0)
+                ParameterInfo parameterInfo = ctorParametersInfo[i];
+                Type type = parameterInfo.ParameterType;
+
+                if (!_instancesByTypes.TryGetValue(type, out object value))
                 {
-                    MethodBase ctorMethod = member[0] as MethodBase;
-                    if (ctorMethod != null)
+                    if (!_bindInfoByTypes.ContainsKey(type))
                     {
-                        return ctorMethod.GetParameters();
+                        throw new Exception($"Can't instantiate type '{type}' because it's not bind!");
                     }
+
+                    if (dependencyStack.Contains(type))
+                    {
+                        ThrowCircularDependencyException(dependencyStack, type);
+                    }
+
+                    value = Instantiate(_bindInfoByTypes[type], dependencyStack);
                 }
+
+                arguments[i] = value;
             }
-            else
+
+            return arguments;
+        }
+
+        private ParameterInfo[] GetConstructorParameterInfos(Type type)
+        {
+            MemberInfo[] member = type.GetMember(".ctor");
+            if (member.Length > 0)
             {
-                MethodInfo[] methodInfos = instanceType.GetMethods();
-                MethodInfo injectMethod = null;
-                foreach (MethodInfo methodInfo in methodInfos)
+                MethodBase ctorMethod = member[0] as MethodBase;
+                if (ctorMethod != null)
                 {
-                    InjectAttribute customAttribute = methodInfo.GetCustomAttribute<InjectAttribute>();
-                    if (customAttribute != null)
-                    {
-                        injectMethod = methodInfo;
-                        break;
-                    }
+                    return ctorMethod.GetParameters();
                 }
-
-                if (injectMethod == null)
-                {
-                    return null;
-                }
-
-                return injectMethod.GetParameters();
             }
 
             return null;
+        }
+
+        private ParameterInfo[] GetCtorParametersInfo(Type instanceType)
+        {
+            return !IsMonoBehaviour(instanceType)
+                ? GetConstructorParameterInfos(instanceType)
+                : GetMethodParameterInfos(instanceType, out _);
+        }
+
+        private object GetInstance(Type type)
+        {
+            if (!_instancesByTypes.TryGetValue(type, out object obj))
+            {
+                obj = Instantiate(type);
+            }
+
+            return obj;
+        }
+
+        private ParameterInfo[] GetMethodParameterInfos(Type type, out MethodInfo methodInfo)
+        {
+            methodInfo = null;
+
+            MethodInfo[] methodInfos = type.GetMethods();
+            foreach (MethodInfo method in methodInfos)
+            {
+                InjectAttribute customAttribute = method.GetCustomAttribute<InjectAttribute>();
+                if (customAttribute != null)
+                {
+                    methodInfo = method;
+                    break;
+                }
+            }
+
+            return methodInfo == null ? null : methodInfo.GetParameters();
         }
 
         private object Instantiate(Type type)
@@ -156,58 +192,30 @@ namespace Playground.DI
 
             ParameterInfo[] ctorParametersInfo = GetCtorParametersInfo(instanceType);
 
-            object instance = null;
+            object instance;
             if (ctorParametersInfo == null || ctorParametersInfo.Length == 0)
             {
-                instance = InstantiateWithoutParameters(bindInfo);
+                instance = Instantiate(bindInfo, arguments: null);
             }
             else
             {
-                object[] arguments = new object[ctorParametersInfo.Length];
-
                 dependencyStack ??= new List<Type>();
                 dependencyStack.Add(instanceType);
 
-                for (int i = 0; i < ctorParametersInfo.Length; i++)
-                {
-                    ParameterInfo parameterInfo = ctorParametersInfo[i];
-                    Type type = parameterInfo.ParameterType;
-                    if (!_instancesByTypes.TryGetValue(type, out object value))
-                    {
-                        if (!_bindInfoByTypes.ContainsKey(type))
-                        {
-                            throw new Exception($"Can't instantiate type '{type}' because it's not bind!");
-                        }
-
-                        if (dependencyStack.Contains(type))
-                        {
-                            string stackString = string.Empty;
-                            for (int j = dependencyStack.Count - 1; j >= 0; j--)
-                            {
-                                stackString += $"{dependencyStack[j].Name}";
-
-                                if (j != 0)
-                                {
-                                    stackString += "\n";
-                                }
-                            }
-
-                            throw new Exception(
-                                $"Circular dependency for type '{type.Name}' with stack:\n{stackString}");
-                        }
-
-                        value = Instantiate(_bindInfoByTypes[type], dependencyStack);
-                    }
-
-                    arguments[i] = value;
-                }
-
-                instance = InstantiateWithParameters(bindInfo, arguments);
+                object[] arguments = GetArgumentsInstances(dependencyStack, ctorParametersInfo);
+                instance = Instantiate(bindInfo, arguments);
             }
 
             _instancesByTypes.Add(bindInfo.BindType, instance);
 
             return instance;
+        }
+
+        private object Instantiate(BindInfo info, object[] arguments)
+        {
+            return info.BindMethod == BindMethod.Instance
+                ? CreatePureInstance(info, arguments)
+                : InstantiateGameObject(info);
         }
 
         private object InstantiateGameObject(BindInfo info)
@@ -225,38 +233,16 @@ namespace Playground.DI
             return addComponent;
         }
 
-        private object InstantiateWithoutParameters(BindInfo info)
+        private Object InstantiatePrefab(Type type, GameObject prefab, Transform transform)
         {
-            object instance;
-            if (info.BindMethod == BindMethod.Instance)
-            {
-                instance = Activator.CreateInstance(info.GetInstanceType());
-            }
-            else
-            {
-                instance = InstantiateGameObject(info);
-            }
+            GameObject go = Object.Instantiate(prefab, transform);
+            Component component = go.GetComponent(type);
+            TryInjectObject(component);
 
-            return instance;
+            return component;
         }
 
-        private object InstantiateWithParameters(BindInfo info, object[] arguments)
-        {
-            object instance;
-
-            if (info.BindMethod == BindMethod.Instance)
-            {
-                instance = Activator.CreateInstance(info.GetInstanceType(), arguments);
-            }
-            else
-            {
-                instance = InstantiateGameObject(info);
-            }
-
-            return instance;
-        }
-
-        private bool IsMonobeh(Type instanceType)
+        private bool IsMonoBehaviour(Type instanceType)
         {
             if (instanceType.BaseType == null)
             {
@@ -268,30 +254,29 @@ namespace Playground.DI
                 return true;
             }
 
-            return IsMonobeh(instanceType.BaseType);
+            return IsMonoBehaviour(instanceType.BaseType);
+        }
+
+        private static void ThrowCircularDependencyException(List<Type> dependencyStack, Type type)
+        {
+            string stackString = string.Empty;
+            for (int j = dependencyStack.Count - 1; j >= 0; j--)
+            {
+                stackString += $"{dependencyStack[j].Name}";
+
+                if (j != 0)
+                {
+                    stackString += "\n";
+                }
+            }
+
+            throw new Exception($"Circular dependency for type '{type.Name}' with stack:\n{stackString}");
         }
 
         private void TryInjectObject(Component obj)
         {
             Type type = obj.GetType();
-            MethodInfo[] methodInfos = type.GetMethods();
-            MethodInfo injectMethod = null;
-            foreach (MethodInfo methodInfo in methodInfos)
-            {
-                InjectAttribute customAttribute = methodInfo.GetCustomAttribute<InjectAttribute>();
-                if (customAttribute != null)
-                {
-                    injectMethod = methodInfo;
-                    break;
-                }
-            }
-
-            if (injectMethod == null)
-            {
-                return;
-            }
-
-            ParameterInfo[] parameterInfos = injectMethod.GetParameters();
+            ParameterInfo[] parameterInfos = GetMethodParameterInfos(type, out MethodInfo methodInfo);
 
             if (parameterInfos.Length == 0)
             {
@@ -305,17 +290,7 @@ namespace Playground.DI
                 arguments[i] = GetInstance(parameterInfos[i].ParameterType);
             }
 
-            injectMethod.Invoke(obj, arguments);
-        }
-
-        private object GetInstance(Type type)
-        {
-            if (!_instancesByTypes.TryGetValue(type, out object obj))
-            {
-                obj = Instantiate(type);
-            }
-
-            return obj;
+            methodInfo.Invoke(obj, arguments);
         }
 
         #endregion

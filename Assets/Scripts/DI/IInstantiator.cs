@@ -8,7 +8,7 @@ namespace Playground.DI
 
         TComponent InstantiatePrefab<TComponent>(GameObject prefab, Transform transform)
             where TComponent : MonoBehaviour;
-        
+
         TComponent InstantiatePrefab<TComponent>(Component prefab, Transform transform)
             where TComponent : MonoBehaviour;
 
