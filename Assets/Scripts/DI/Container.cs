@@ -28,6 +28,12 @@ namespace Playground.DI
 
         #region IInstantiator
 
+        public T Instantiate<T>()
+        {
+            // TODO:
+            return default;
+        }
+
         public TComponent InstantiatePrefab<TComponent>(GameObject prefab, Transform transform)
             where TComponent : MonoBehaviour
         {

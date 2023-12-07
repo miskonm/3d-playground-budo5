@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace Playground.Services.Save
 {
@@ -19,14 +20,26 @@ namespace Playground.Services.Save
     // --------------- For example ----------------------
 
     [Serializable]
-    public class UserSaveData
+    public class UserSaveData : ILevelIncrementable
     {
         #region Variables
 
-        public int LevelIndex;
+        [SerializeField]private int _levelIndex;
         public List<LevelSaveData> Levels = new();
 
+        public int LevelIndex => _levelIndex;
+
         #endregion
+
+        void ILevelIncrementable.IncrementLevelIndex()
+        {
+            _levelIndex++;
+        }
+    }
+
+    public interface ILevelIncrementable
+    {
+        void IncrementLevelIndex();
     }
 
     [Serializable]

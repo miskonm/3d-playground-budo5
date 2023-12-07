@@ -6,6 +6,8 @@ namespace Playground.DI
     {
         #region Public methods
 
+        T Instantiate<T>();
+
         TComponent InstantiatePrefab<TComponent>(GameObject prefab, Transform transform)
             where TComponent : MonoBehaviour;
 

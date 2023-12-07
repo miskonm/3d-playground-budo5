@@ -21,7 +21,6 @@ namespace Playground.Services.GameManagement
         {
             _sceneLoader = sceneLoader;
             _eventBus = eventBus;
-            this.LogError($"ctor sceneLoader '{sceneLoader}' eventBus '{eventBus}'");
         }
 
         #endregion

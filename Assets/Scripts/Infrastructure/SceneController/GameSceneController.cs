@@ -41,13 +41,6 @@ namespace Playground.Infrastructure.SceneController
 
             _gameScreenService.ShowScreen();
             _audioService.PlayMusic();
-
-            // This is for example only
-            _eventBus.Fire(new LevelStartEvent
-            {
-                levelName = "Test",
-                countSmth = 15,
-            });
         }
 
         private void OnDestroy()
