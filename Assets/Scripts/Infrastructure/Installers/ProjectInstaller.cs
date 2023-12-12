@@ -2,6 +2,7 @@ using Playground.Game;
 using Playground.Services.AppState;
 using Playground.Services.Audio;
 using Playground.Services.Bootstrap;
+using Playground.Services.Command;
 using Playground.Services.Event;
 using Playground.Services.GameManagement;
 using Playground.Services.Input;
@@ -18,7 +19,6 @@ namespace Playground.Infrastructure.Installers
 
         protected override void InstallBindings()
         {
-            this.LogError($"InstallBindings");
             GameManagementServiceInstaller.Install(Container);
             SceneLoaderInstaller.Install(Container);
             EventBusInstaller.Install(Container);
@@ -28,6 +28,7 @@ namespace Playground.Infrastructure.Installers
             GameDataServiceInstaller.Install(Container);
             AppStateServiceInstaller.Install(Container);
             BootstrapServiceInstaller.Install(Container);
+            CommandServiceInstaller.Install(Container);
 
             Container.Bind<GameScreenService>();
             Container.Bind<SettingsScreenController>();

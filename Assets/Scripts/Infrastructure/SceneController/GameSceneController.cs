@@ -37,7 +37,7 @@ namespace Playground.Infrastructure.SceneController
 
         private void Start()
         {
-            _gameDataService.Data.User.LevelIndex++;
+            // _gameDataService.Data.User.LevelIndex++;
 
             _gameScreenService.ShowScreen();
             _audioService.PlayMusic();

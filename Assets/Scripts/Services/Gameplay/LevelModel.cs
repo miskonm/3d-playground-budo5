@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Playground.Game.Gameplay.Interaction;
 
 namespace Playground.Services.Gameplay
 {
@@ -11,14 +12,16 @@ namespace Playground.Services.Gameplay
         public string Id { get; }
         public LevelState LevelState { get; private set; }
         // public List<UnitModel> Blockes { get; }
+        public LevelType LevelType { get; }
 
         #endregion
 
         #region Setup/Teardown
 
-        public LevelModel(string id)
+        public LevelModel(string id, LevelType levelType)
         {
             Id = id;
+            LevelType = levelType;
             LevelState = LevelState.Preparing;
         }
 

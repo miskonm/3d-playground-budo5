@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace Playground.DI
@@ -7,6 +8,7 @@ namespace Playground.DI
         #region Public methods
 
         T Instantiate<T>();
+        object Instantiate(Type type);
 
         TComponent InstantiatePrefab<TComponent>(GameObject prefab, Transform transform)
             where TComponent : MonoBehaviour;

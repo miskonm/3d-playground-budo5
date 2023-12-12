@@ -8,7 +8,6 @@ namespace Playground.DI
     {
         private void Awake()
         {
-            this.LogError("Awake");
             if (Context.Instance == null)
             {
                 Context.Create();
@@ -17,7 +16,6 @@ namespace Playground.DI
 
         private void Start()
         {
-            this.LogError("Start");
             Context.Instance.InjectAllSceneObjects();
         }
     }

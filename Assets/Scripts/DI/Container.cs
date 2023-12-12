@@ -34,6 +34,11 @@ namespace Playground.DI
             return default;
         }
 
+        public object Instantiate(Type type)
+        {
+            return null;
+        }
+
         public TComponent InstantiatePrefab<TComponent>(GameObject prefab, Transform transform)
             where TComponent : MonoBehaviour
         {
@@ -158,7 +163,7 @@ namespace Playground.DI
         {
             if (!_instancesByTypes.TryGetValue(type, out object obj))
             {
-                obj = Instantiate(type);
+                obj = InstantiateInternal(type);
             }
 
             return obj;
@@ -182,7 +187,7 @@ namespace Playground.DI
             return methodInfo == null ? null : methodInfo.GetParameters();
         }
 
-        private object Instantiate(Type type)
+        private object InstantiateInternal(Type type)
         {
             if (!_bindInfoByTypes.ContainsKey(type))
             {
@@ -284,7 +289,7 @@ namespace Playground.DI
             Type type = obj.GetType();
             ParameterInfo[] parameterInfos = GetMethodParameterInfos(type, out MethodInfo methodInfo);
 
-            if (parameterInfos.Length == 0)
+            if (parameterInfos == null || parameterInfos.Length == 0)
             {
                 return;
             }

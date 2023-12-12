@@ -1,3 +1,5 @@
+using Playground.Game.Gameplay.Interaction;
+
 namespace Playground.Services.Gameplay
 {
     public class LevelBuilder
@@ -7,7 +9,7 @@ namespace Playground.Services.Gameplay
         public LevelModel Build(LevelData levelData)
         {
             // Create prefabs for level
-            return new LevelModel(levelData.id);
+            return new LevelModel(levelData.id, LevelType.Default);
         }
 
         #endregion

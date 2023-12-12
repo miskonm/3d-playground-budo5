@@ -14,11 +14,6 @@ namespace Playground.Services.Event
 
         #region Public methods
 
-        public EventBus()
-        {
-            this.LogError($".ctor");
-        }
-
         public void Fire<TEvent>(TEvent e = default)
         {
             List<object> handlers = GetHandlers<TEvent>();

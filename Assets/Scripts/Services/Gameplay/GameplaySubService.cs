@@ -77,7 +77,7 @@ namespace Playground.Services.Gameplay
             if (Config == null)
             {
                 this.LogError($"[{nameof(LoadConfig)}] Can't load '{typeof(TConfig).Name}' config " +
-                           $"for sub service '{GetType().Name}'");
+                              $"for sub service '{GetType().Name}'");
             }
 
             _isConfigLoaded = true;
